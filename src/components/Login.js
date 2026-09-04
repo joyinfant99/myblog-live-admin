@@ -18,16 +18,7 @@ function Login() {
     setLoading(true);
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log("User signed in:", userCredential.user);
-      
-      await userCredential.user.getIdToken(true);
-      const claims = await userCredential.user.getIdTokenResult();
-      
-      if (!claims.claims.admin) {
-        throw new Error('Unauthorized access. Admin privileges required.');
-      }
-
+      await signInWithEmailAndPassword(auth, email, password);
       navigate('/dashboard');
     } catch (error) {
       console.error("Login error:", error);
@@ -59,13 +50,7 @@ function Login() {
 
     try {
       const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const claims = await result.user.getIdTokenResult();
-      
-      if (!claims.claims.admin) {
-        throw new Error('Unauthorized access. Admin privileges required.');
-      }
-
+      await signInWithPopup(auth, provider);
       navigate('/dashboard');
     } catch (error) {
       console.error("Google login error:", error);

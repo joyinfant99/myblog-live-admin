@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Menu, X, Sun, Moon, LayoutDashboard, FileText, Settings, LogOut, BarChart3 } from 'lucide-react';
+import { Menu, X, Sun, Moon, LayoutDashboard, FileText, Settings, LogOut, BarChart3, Music } from 'lucide-react';
 import './Navigation.css';
 
 function Navigation({ isDarkMode, toggleDarkMode }) {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -38,14 +38,18 @@ function Navigation({ isDarkMode, toggleDarkMode }) {
           <span>Analytics</span>
         </Link>
       </li>
-      {user?.isAdmin && (
-        <li>
-          <Link to="/categories" className="nav-link">
-            <Settings size={18} />
-            <span>Categories</span>
-          </Link>
-        </li>
-      )}
+      <li>
+        <Link to="/categories" className="nav-link">
+          <Settings size={18} />
+          <span>Categories</span>
+        </Link>
+      </li>
+      <li>
+        <Link to="/releases" className="nav-link">
+          <Music size={18} />
+          <span>Releases</span>
+        </Link>
+      </li>
       <li>
         <button onClick={handleLogout} className="nav-link logout">
           <LogOut size={18} />

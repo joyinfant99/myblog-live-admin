@@ -10,9 +10,6 @@ function CategoryManagement() {
 
   const REACT_APP_API_URL = process.env.REACT_APP_API_URL || 'https://blog-api.joyinfant.com';
 
-
-  console.log("CategoryManagement rendered, user:", user); // Debug log
-
   const fetchCategories = useCallback(async () => {
     try {
       const response = await axios.get(`${REACT_APP_API_URL}/categories`);
@@ -39,9 +36,8 @@ function CategoryManagement() {
     }
   };
 
-  if (!user || !user.isAdmin) {
-    console.log("User is not admin, redirecting..."); // Debug log
-    return <p>You don't have permission to access this page.</p>;
+  if (!user) {
+    return <p>Please log in to manage categories.</p>;
   }
 
   return (

@@ -8,6 +8,8 @@ import BlogPost from './components/BlogPost';
 import CreatePost from './components/CreatePost';
 import CategoryManagement from './components/CategoryManagement';
 import AnalyticsDashboard from './components/AnalyticsDashboard';
+import Releases from './components/Releases';
+import ReleaseForm from './components/ReleaseForm';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './components/Login';
 import './App.css';
@@ -101,23 +103,49 @@ function AppContent() {
             />
 
             {/* Category Management */}
-            <Route 
-              path="/categories" 
+            <Route
+              path="/categories"
               element={
-                <ProtectedRoute adminOnly={true}>
+                <ProtectedRoute>
                   <CategoryManagement />
                 </ProtectedRoute>
-              } 
+              }
             />
 
             {/* Analytics Dashboard */}
-            <Route 
-              path="/analytics" 
+            <Route
+              path="/analytics"
               element={
                 <ProtectedRoute>
                   <AnalyticsDashboard />
                 </ProtectedRoute>
-              } 
+              }
+            />
+
+            {/* Music Releases */}
+            <Route
+              path="/releases"
+              element={
+                <ProtectedRoute>
+                  <Releases />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/create-release"
+              element={
+                <ProtectedRoute>
+                  <ReleaseForm mode="create" />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/edit-release/:id"
+              element={
+                <ProtectedRoute>
+                  <ReleaseForm mode="edit" />
+                </ProtectedRoute>
+              }
             />
 
             {/* Root Route */}
@@ -153,7 +181,7 @@ function AppContent() {
 function App() {
   return (
     <HelmetProvider>
-      <Router>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <AuthProvider>
           <AppContent />
         </AuthProvider>
