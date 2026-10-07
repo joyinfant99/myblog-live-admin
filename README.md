@@ -1,70 +1,32 @@
-# Getting Started with Create React App
+# Joy Infant · Admin
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The private admin for [joyinfant.com](https://www.joyinfant.com): posts, categories, music releases, analytics,
+private notes and inspiration, and a status dashboard that watches my other apps. Built with Next.js (App Router),
+Tailwind, Firebase sign-in and a Node/Express API. It installs as an app on phones and desktops (PWA).
 
-## Available Scripts
+## Run it locally
 
-In the project directory, you can run:
+```bash
+npm install
+cp .env.example .env.local   # then point it at a backend, e.g. http://localhost:3001
+npm run dev                  # http://localhost:3200
+```
 
-### `npm start`
+## Settings
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+| Variable | What it is |
+|---|---|
+| `NEXT_PUBLIC_API_URL` | The backend API, e.g. `https://blog-api.joyinfant.com` |
+| `NEXT_PUBLIC_SITE_URL` | The public site, used by "View site" |
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Sign-in is Firebase. The backend only lets in the emails listed in its `ADMIN_EMAILS` setting.
 
-### `npm test`
+## Deploy
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Pushing to `main` deploys to Vercel (`vercel.json` pins the Next.js framework; `package.json` pins Node 24).
 
-### `npm run build`
+## Install as an app
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Open the site on a phone: Android and desktop Chrome offer **Install app** (also in the sidebar); on iPhone use
+Share → **Add to Home Screen**. The service worker (`public/sw.js`) never caches pages or API data; offline it shows
+`public/offline.html`.
