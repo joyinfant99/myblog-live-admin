@@ -44,7 +44,7 @@ export default function Select({ value, onChange, options, placeholder = 'Select
   };
 
   const base = variant === 'inline'
-    ? 'prop-input flex items-center gap-2 text-left'
+    ? 'prop-input flex cursor-pointer items-center gap-2 text-left'
     : 'input flex items-center justify-between gap-2 text-left';
 
   return (
@@ -53,7 +53,7 @@ export default function Select({ value, onChange, options, placeholder = 'Select
         <span className="min-w-0 flex-1 truncate">
           {sel ? (sel.bg ? <span className="rounded px-1.5 py-px text-[12.5px]" style={{ background: sel.bg, color: sel.fg }}>{sel.label}</span> : sel.label) : <span className="text-muted/70">{variant === 'inline' ? 'Empty' : placeholder}</span>}
         </span>
-        {variant === 'field' && <ChevronDown size={15} className={`shrink-0 text-muted transition-transform ${open ? 'rotate-180' : ''}`} />}
+        <ChevronDown size={15} className={`shrink-0 text-muted transition-transform ${open ? 'rotate-180' : ''} ${variant === 'inline' ? 'opacity-60' : ''}`} />
       </button>
       {open && createPortal(
         <div className="fixed inset-0 z-[80]" onMouseDown={() => setOpen(false)}>

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { AlertTriangle, ArrowUpRight, Bell, BellOff, CheckCheck, FileText, Gauge, Loader2, Lock, Music, NotebookPen, Plus, RefreshCw, Timer } from 'lucide-react';
+import { AlertTriangle, ArrowUpRight, CheckCheck, FileText, Gauge, Loader2, Lock, Music, NotebookPen, Plus, RefreshCw, Timer } from 'lucide-react';
 import { ago, api, errorMessage, fmtDate, imageUrl } from '@/lib/api';
 import { ConfirmDialog, Notice } from '@/components/ui';
 import Tile, { Eyebrow, useCountUp } from '@/components/dashboard/Tile';
@@ -245,12 +245,6 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {data && (
-        <p className="mt-5 flex items-center gap-1.5 text-[12.5px] text-muted">
-          {data.alerts ? <><Bell size={12} /> Phone alerts are on: you’ll be notified when a service goes down or recovers.</>
-            : <><BellOff size={12} /> Alerts are off. Set <code className="rounded bg-surface2 px-1 font-mono text-[11.5px]">ALERT_WEBHOOK_URL</code> on the server to get a notification when something goes down.</>}
-        </p>
-      )}
 
       <ServiceDetail svc={detail} onClose={() => setDetailId(null)} onEdit={(s) => setDialog({ svc: s })} onDelete={setDel} onChanged={() => load(true)} />
       <ServiceDialog state={dialog} apps={apps.map(([n]) => n)} onClose={() => setDialog(null)} onSaved={() => { setDialog(null); load(true); }} />
