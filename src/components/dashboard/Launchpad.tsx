@@ -9,26 +9,28 @@ import { BlogIcon, EchoIcon, MusicIcon } from './AppGlyphs';
 type App = { key: string; name: string; origin: string; status: Svc['status'] | null };
 
 /**
- * Apps with their own icon file in public/apps/<slug>.png (blog, music, echo, deutsch). If a file is missing, the drawn icon
+ * Apps with their own icon file in public/apps/<slug>.png (blog, music, echo, deutsch, bandos). If a file is missing, the drawn icon
  * (or a lettered tile) shows instead. Other apps use the logo their site declares.
  */
 const Letter = (name: string) => function LetterTile() {
   return <span className="grid h-12 w-12 place-items-center rounded-xl text-[19px] font-semibold" style={{ background: `hsl(${hue(name)} 45% 88%)`, color: `hsl(${hue(name)} 40% 28%)` }}>{name.charAt(0).toUpperCase()}</span>;
 };
-const GLYPH: Record<string, { slug: string; Fallback: () => JSX.Element }> = {
-  [new URL(SITE_URL).origin]: { slug: 'blog', Fallback: BlogIcon },
-  'https://music.joyinfant.com': { slug: 'music', Fallback: MusicIcon },
+const GLYPH: Record<string, { slug: string; Fallback: () => JSX.Element; round?: boolean }> = {
+  [new URL(SITE_URL).origin]: { slug: 'blog', Fallback: BlogIcon, round: true },
+  'https://music.joyinfant.com': { slug: 'music', Fallback: MusicIcon, round: true },
   'https://echo.presalesbench.com': { slug: 'echo', Fallback: EchoIcon },
   'https://deutsch.joyinfant.com': { slug: 'deutsch', Fallback: Letter('Deutsch') },
+  'https://bandosapp.com': { slug: 'bandos', Fallback: Letter('BandOS') },
+  'https://app.bandosapp.com': { slug: 'bandos', Fallback: Letter('BandOS') },
 };
 /** Names for the two BandOS addresses (marketing site and the app itself). */
 const LABELS: Record<string, string> = { 'https://bandosapp.com': 'BandOS', 'https://app.bandosapp.com': 'BandOS Launch' };
 
-function CustomIcon({ slug, Fallback }: { slug: string; Fallback: () => JSX.Element }) {
+function CustomIcon({ slug, Fallback, round }: { slug: string; Fallback: () => JSX.Element; round?: boolean }) {
   const [missing, setMissing] = useState(false);
   if (missing) return <Fallback />;
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src={`/apps/${slug}.png`} alt="" className="h-12 w-12 rounded-xl object-cover" onError={() => setMissing(true)} />;
+  return <img src={`/apps/${slug}.png`} alt="" className={`h-12 w-12 object-cover ring-1 ring-black/10 ${round ? 'rounded-full' : 'rounded-xl'}`} onError={() => setMissing(true)} />;
 }
 
 const LOGO_KEY = 'admin.launchpad.logos';
