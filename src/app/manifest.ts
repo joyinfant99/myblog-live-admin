@@ -13,15 +13,15 @@ export default function manifest(): MetadataRoute.Manifest {
     background_color: '#191918',
     theme_color: '#191918',
     icons: [
-      { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
-      { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
-      { src: '/icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+      { src: '/icons/star-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: '/icons/star-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+      { src: '/icons/star-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
     ],
     // Long-press the home-screen icon (Android) for these.
     shortcuts: [
-      { name: 'Dashboard', short_name: 'Dashboard', url: '/dashboard', icons: [{ src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }] },
-      { name: 'New note', short_name: 'Note', url: '/notes/new', icons: [{ src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }] },
-      { name: 'New post', short_name: 'Post', url: '/posts/new', icons: [{ src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }] },
+      { name: 'Dashboard', short_name: 'Dashboard', url: '/dashboard', icons: [{ src: '/icons/star-192.png', sizes: '192x192', type: 'image/png' }] },
+      { name: 'New note', short_name: 'Note', url: '/notes/new', icons: [{ src: '/icons/star-192.png', sizes: '192x192', type: 'image/png' }] },
+      { name: 'New post', short_name: 'Post', url: '/posts/new', icons: [{ src: '/icons/star-192.png', sizes: '192x192', type: 'image/png' }] },
     ],
   } as MetadataRoute.Manifest;
 }

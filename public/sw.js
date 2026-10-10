@@ -3,10 +3,10 @@
 //  - If you are offline, a navigation shows /offline.html instead of the browser's dinosaur.
 //  - Only immutable build files (/_next/static) and the icons are cached, for speed.
 //  - Requests to other origins (the API) are never touched.
-const CACHE = 'admin-static-v1';
+const CACHE = 'admin-static-v3';
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(['/offline.html', '/icons/icon-192.png'])).then(() => self.skipWaiting()));
+  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(['/offline.html', '/icons/star-192.png'])).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (event) => {

@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   applicationName: 'Joy Infant Admin',
   appleWebApp: { capable: true, title: 'Admin', statusBarStyle: 'default' },
   formatDetection: { telephone: false },
-  icons: { icon: [{ url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }, { url: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' }], apple: '/icons/apple-touch-icon.png' },
+  icons: { icon: [{ url: '/icons/star.svg', type: 'image/svg+xml' }, { url: '/icons/star-32.png', sizes: '32x32', type: 'image/png' }, { url: '/icons/star-48.png', sizes: '48x48', type: 'image/png' }, { url: '/icons/star-192.png', sizes: '192x192', type: 'image/png' }], apple: '/icons/star-apple-touch.png' },
 };
 
 export const viewport: Viewport = {

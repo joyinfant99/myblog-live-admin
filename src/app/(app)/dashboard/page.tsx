@@ -7,6 +7,7 @@ import { ago, api, errorMessage, fmtDate, imageUrl } from '@/lib/api';
 import { ConfirmDialog, Notice } from '@/components/ui';
 import Tile, { Eyebrow, useCountUp } from '@/components/dashboard/Tile';
 import { Ring, Spark, Timeline, type Slot } from '@/components/dashboard/charts';
+import Launchpad from '@/components/dashboard/Launchpad';
 import ServiceDialog from '@/components/dashboard/ServiceDialog';
 import ServiceDetail from '@/components/dashboard/ServiceDetail';
 import { host, ms, pct, type Payload, type Svc } from '@/components/dashboard/types';
@@ -119,6 +120,8 @@ export default function DashboardPage() {
   return (
     <>
       {error && <Notice>{error}</Notice>}
+
+      <Launchpad monitors={monitors} />
 
       <div className="grid grid-flow-dense auto-rows-[minmax(150px,auto)] gap-3 sm:grid-cols-6 lg:grid-cols-12">
         {/* ---------- hero ---------- */}
