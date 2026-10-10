@@ -13,25 +13,30 @@ type App = { key: string; name: string; origin: string; status: Svc['status'] | 
  * (or a lettered tile) shows instead. Other apps use the logo their site declares.
  */
 const Letter = (name: string) => function LetterTile() {
-  return <span className="grid h-12 w-12 place-items-center rounded-xl text-[19px] font-semibold" style={{ background: `hsl(${hue(name)} 45% 88%)`, color: `hsl(${hue(name)} 40% 28%)` }}>{name.charAt(0).toUpperCase()}</span>;
+  return <span className="grid h-14 w-14 place-items-center rounded-[22%] text-[22px] font-semibold" style={{ background: `hsl(${hue(name)} 45% 88%)`, color: `hsl(${hue(name)} 40% 28%)` }}>{name.charAt(0).toUpperCase()}</span>;
 };
-const GLYPH: Record<string, { slug: string; Fallback: () => JSX.Element; round?: boolean }> = {
-  [new URL(SITE_URL).origin]: { slug: 'blog', Fallback: BlogIcon, round: true },
-  'https://music.joyinfant.com': { slug: 'music', Fallback: MusicIcon, round: true },
+const GLYPH: Record<string, { slug: string; Fallback: () => JSX.Element }> = {
+  [new URL(SITE_URL).origin]: { slug: 'blog', Fallback: BlogIcon },
+  'https://music.joyinfant.com': { slug: 'music', Fallback: MusicIcon },
   'https://echo.presalesbench.com': { slug: 'echo', Fallback: EchoIcon },
   'https://deutsch.joyinfant.com': { slug: 'deutsch', Fallback: Letter('Deutsch') },
   'https://bandosapp.com': { slug: 'bandos', Fallback: Letter('BandOS') },
   'https://app.bandosapp.com': { slug: 'bandos', Fallback: Letter('BandOS') },
 };
+/** Addresses kept out of the grid (still monitored elsewhere). */
+const HIDDEN = new Set(['https://app.bandosapp.com']);
 /** Names for the two BandOS addresses (marketing site and the app itself). */
 const LABELS: Record<string, string> = { 'https://bandosapp.com': 'BandOS', 'https://app.bandosapp.com': 'BandOS Launch' };
 
-function CustomIcon({ slug, Fallback, round }: { slug: string; Fallback: () => JSX.Element; round?: boolean }) {
+function CustomIcon({ slug, Fallback }: { slug: string; Fallback: () => JSX.Element }) {
   const [missing, setMissing] = useState(false);
   if (missing) return <Fallback />;
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src={`/apps/${slug}.png`} alt="" className={`h-12 w-12 object-cover ring-1 ring-black/10 ${round ? 'rounded-full' : 'rounded-xl'}`} onError={() => setMissing(true)} />;
+  return <img src={`/apps/${slug}.png`} alt="" className={`h-14 w-14 rounded-[22%] object-cover ${EDGE}`} onError={() => setMissing(true)} />;
 }
+
+/** Soft layered shadow plus a hairline edge; deepens when the tile is hovered or focused. */
+const EDGE = 'ring-1 ring-black/10 shadow-[0_1px_2px_rgba(0,0,0,.08),0_4px_10px_-2px_rgba(0,0,0,.14)] transition-shadow duration-200 group-hover:shadow-[0_2px_4px_rgba(0,0,0,.08),0_12px_24px_-6px_rgba(0,0,0,.28)] group-focus-visible:shadow-[0_2px_4px_rgba(0,0,0,.08),0_12px_24px_-6px_rgba(0,0,0,.28)] dark:ring-white/15';
 
 const LOGO_KEY = 'admin.launchpad.logos';
 const originOf = (u: string) => { try { return new URL(u).origin; } catch { return ''; } };
@@ -67,12 +72,12 @@ function AppIcon({ name, origin, logo, pending }: { name: string; origin: string
 
   const custom = GLYPH[origin];
   if (custom) return <CustomIcon {...custom} />;
-  if (pending) return <span className="block h-12 w-12 animate-shimmer rounded-xl bg-surface2" />;
+  if (pending) return <span className="block h-14 w-14 animate-shimmer rounded-[22%] bg-surface2" />;
   if (i >= sources.length) {
-    return <span className="grid h-12 w-12 place-items-center rounded-xl text-[19px] font-semibold" style={{ background: `hsl(${hue(name)} 45% 88%)`, color: `hsl(${hue(name)} 40% 28%)` }}>{name.trim().charAt(0).toUpperCase() || '?'}</span>;
+    return <span className="grid h-14 w-14 place-items-center rounded-[22%] text-[22px] font-semibold" style={{ background: `hsl(${hue(name)} 45% 88%)`, color: `hsl(${hue(name)} 40% 28%)` }}>{name.trim().charAt(0).toUpperCase() || '?'}</span>;
   }
   return (
-    <span className="grid h-12 w-12 place-items-center overflow-hidden rounded-xl border border-line bg-white p-1">
+    <span className={`grid h-14 w-14 place-items-center overflow-hidden rounded-[22%] bg-white p-1 ${EDGE}`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img key={sources[i]} src={sources[i]} alt="" className="h-full w-full object-contain" referrerPolicy="no-referrer"
         onLoad={() => { loaded.current = true; }} onError={() => setI((n) => n + 1)} />
@@ -80,7 +85,7 @@ function AppIcon({ name, origin, logo, pending }: { name: string; origin: string
   );
 }
 
-/** A front page of your user-facing apps: one tile per app with its logo and a live status dot, opening in a new tab. */
+/** A front page of my user-facing apps: one tile per app with its logo and a live status dot, opening in a new tab. */
 export default function Launchpad({ monitors }: { monitors: Svc[] }) {
   const [logos, setLogos] = useState<Record<string, string | null> | null>(null);   // null = nothing yet (first ever visit)
   useEffect(() => { try { const c = localStorage.getItem(LOGO_KEY); if (c) setLogos(JSON.parse(c)); } catch {} }, []);      // last known logos, instantly
@@ -111,22 +116,22 @@ export default function Launchpad({ monitors }: { monitors: Svc[] }) {
     add({ key: origin, name: LABELS[origin] || label, origin, status });
   });
 
-  const list = [...apps.values()];
+  const list = [...apps.values()].filter((a) => !HIDDEN.has(a.origin));
   if (!list.length) return null;
 
   return (
-    <section aria-label="Your apps" className="mb-3 animate-rise rounded-[18px] border border-line bg-surface p-3 sm:p-4">
+    <section aria-label="My apps" className="mb-3 animate-rise rounded-[18px] border border-line bg-surface p-3 sm:p-4">
       <div className="mb-2.5 flex items-center justify-between px-1">
-        <h2 className="text-[13px] font-medium text-muted">Your apps</h2>
+        <h2 className="text-[13px] font-medium text-muted">My apps</h2>
         <span className="text-[12px] text-muted/70">{list.length} {list.length === 1 ? 'app' : 'apps'}</span>
       </div>
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(92px,1fr))] gap-1">
-        {list.map((a) => (
-          <a key={a.key} href={a.origin} target="_blank" rel="noopener noreferrer" title={hostOf(a.origin)}
-            className="group relative flex flex-col items-center gap-1.5 rounded-xl px-1.5 py-2.5 text-center transition-colors hover:bg-surface2/70 focus-visible:bg-surface2 focus-visible:outline-none">
-            <span className="relative">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-2">
+        {list.map((a, i) => (
+          <a key={a.key} href={a.origin} target="_blank" rel="noopener noreferrer" title={hostOf(a.origin)} style={{ animationDelay: `${i * 50}ms` }}
+            className="group relative flex animate-rise flex-col items-center gap-2 rounded-2xl px-1.5 py-3 text-center transition-colors duration-200 hover:bg-surface2/70 focus-visible:bg-surface2 focus-visible:outline-none">
+            <span className="relative transition-transform duration-200 [transition-timing-function:cubic-bezier(.34,1.56,.64,1)] group-hover:-translate-y-1 group-active:scale-95 group-focus-visible:-translate-y-1 motion-reduce:transform-none">
               <AppIcon name={a.name} origin={a.origin} logo={logos?.[a.origin]} pending={logos === null} />
-              {a.status && <span className={`absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 border-surface ${DOT[a.status]}`} aria-label={a.status} />}
+              {a.status && <span className={`absolute -right-1 -top-1 h-3.5 w-3.5 rounded-full border-2 border-surface ${DOT[a.status]}`} aria-label={a.status} />}
             </span>
             <span className="line-clamp-2 w-full break-words text-[12.5px] font-medium leading-tight text-fg">{a.name}</span>
             <ExternalLink size={11} className="absolute right-2 top-2 text-muted opacity-0 transition-opacity group-hover:opacity-100" />
