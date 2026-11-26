@@ -1,12 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { ExternalLink, Projector, Speaker, Tv } from 'lucide-react';
-import { api, errorMessage } from '@/lib/api';
+import { ExternalLink, Tv } from 'lucide-react';
+import { API_URL, api, errorMessage } from '@/lib/api';
 import { Notice, PageHeader, Skeleton } from '@/components/ui';
 
-// The Home Cinema app (Yamaha receiver + Formovie projector) runs on the homelab, on the home network only.
-// Its address carries a private key, so it comes from the API (admin sign-in required), not from this page's code.
+// The Home Cinema app (Yamaha receiver + Xiaomi projector) runs on the homelab. The blog API serves it under /cinema/ for signed-in admins only.
 type Dev = { state: 'on' | 'standby' | 'off'; volume?: number; input?: string };
 const LABEL = { on: 'On', standby: 'Standby', off: 'Off / unreachable' } as const;
 const DOT = { on: 'bg-success', standby: 'bg-muted', off: 'bg-danger' } as const;
@@ -28,34 +27,27 @@ export default function MediaPage() {
   }, []);
   useEffect(() => { check(); const t = setInterval(check, 10000); return () => clearInterval(t); }, [check]);
 
-  const [url, setUrl] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
   const [error, setError] = useState('');
+  const appUrl = `${API_URL}/cinema/`;
 
-  useEffect(() => {
-    api.get('/admin/cinema')
-      .then((r) => setUrl(r.data?.url || ''))
-      .catch((e) => { setError(errorMessage(e, 'Could not load the Media Centre link.')); setUrl(''); });
+  // An iframe cannot send the sign-in token, so the API gives this browser a short-lived cookie first (admins only).
+  const openSession = useCallback(async () => {
+    try { await api.post('/admin/cinema/session'); setReady(true); setError(''); }
+    catch (e) { setError(errorMessage(e, 'Could not open the Media Centre.')); }
   }, []);
+  useEffect(() => { openSession(); const t = setInterval(openSession, 6 * 3600 * 1000); return () => clearInterval(t); }, [openSession]);
 
   return (
-    <div className="space-y-6">
-      <PageHeader icon={Tv} title="Media Centre" description="Receiver, speakers and projector, all in one place." />
+    <div className="space-y-4">
+      <PageHeader icon={Tv} title="Media Centre" description="Receiver, speakers and projector, all in one place.">
+        {ready && <a href={appUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost"><ExternalLink size={15} /> Full screen</a>}
+      </PageHeader>
       <div className="flex flex-wrap gap-2"><Status name="Receiver" dev={dev.receiver} /><Status name="Projector" dev={dev.projector} /></div>
       {error && <Notice>{error}</Notice>}
-      {url === null ? <Skeleton rows={3} /> : (
-        <section className="card p-6">
-          <div className="mb-5 grid gap-4 sm:grid-cols-3">
-            <div className="flex items-start gap-3"><Speaker size={18} strokeWidth={1.6} className="mt-0.5 text-muted" /><div><p className="text-sm font-medium text-fg">Yamaha RX-V485</p><p className="text-xs text-muted">Volume, input, sound programs, scenes</p></div></div>
-            <div className="flex items-start gap-3"><Projector size={18} strokeWidth={1.6} className="mt-0.5 text-muted" /><div><p className="text-sm font-medium text-fg">Formovie L1 Pro</p><p className="text-xs text-muted">Remote, now playing, 94 picture settings</p></div></div>
-            <div className="flex items-start gap-3"><Tv size={18} strokeWidth={1.6} className="mt-0.5 text-muted" /><div><p className="text-sm font-medium text-fg">Google TV</p><p className="text-xs text-muted">Apps, keys, picture profile</p></div></div>
-          </div>
-          {url
-            ? (<>
-              <a href={url} target="_blank" rel="noopener noreferrer" className="btn-primary inline-flex"><ExternalLink size={15} /> Open Media Centre</a>
-              <p className="mt-3 text-xs text-muted">Opens in a new tab. It works on your home Wi-Fi, where the receiver and projector are.</p>
-            </>)
-            : !error && <Notice>The Media Centre link is not set up yet. Add CINEMA_URL to the blog API settings on the homelab.</Notice>}
-        </section>
+      {!ready && !error && <Skeleton rows={3} />}
+      {ready && (
+        <iframe title="Home Cinema" src={appUrl} className="w-full rounded-xl border border-line bg-black" style={{ height: 'calc(100vh - 230px)', minHeight: 620 }} allow="fullscreen" />
       )}
     </div>
   );
