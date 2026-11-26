@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { BarChart3, ChevronUp, ExternalLink, FileText, LayoutDashboard, Lightbulb, LogOut, Menu, MoreHorizontal, Music, NotebookPen, Plus, Search, Settings, X, type LucideIcon } from 'lucide-react';
+import { BarChart3, ChevronUp, ExternalLink, FileText, LayoutDashboard, Lightbulb, LogOut, Menu, MoreHorizontal, Music, NotebookPen, Plus, Search, Settings, Tv, X, type LucideIcon } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { SITE_URL } from '@/lib/api';
 import { useNavHint } from '@/lib/nav-hint';
@@ -16,6 +16,7 @@ const WORKSPACE: Item[] = [
   { href: '/posts', label: 'Posts', icon: FileText },
   { href: '/releases', label: 'Releases', icon: Music },
   { href: '/analytics', label: 'Analytics', icon: BarChart3 },
+  { href: '/media', label: 'Media Centre', icon: Tv },
 ];
 const PRIVATE: Item[] = [
   { href: '/notes', label: 'Notes', icon: NotebookPen },
