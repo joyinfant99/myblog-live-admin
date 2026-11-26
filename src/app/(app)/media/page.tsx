@@ -1,27 +1,41 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowRight, Projector, RefreshCw, Speaker, Tv } from 'lucide-react';
+import { ArrowRight, RefreshCw, Tv } from 'lucide-react';
 import { API_URL, api, errorMessage } from '@/lib/api';
 import { Notice, PageHeader } from '@/components/ui';
+import DeviceModel from '@/components/DeviceModel';
 
-type Dev = { state: 'on' | 'standby' | 'off'; volume?: number; input?: string };
+type Dev = { state: 'on' | 'standby' | 'off'; volume?: number; input?: string; maker?: string; brand?: string; model?: string; name?: string; android?: string };
 type Devices = { receiver?: Dev; projector?: Dev };
 const LABEL = { on: 'Switched on', standby: 'Standby', off: 'Off or unreachable' } as const;
 const DOT = { on: 'bg-success', standby: 'bg-muted', off: 'bg-danger' } as const;
 
-function Device({ icon: Icon, name, dev, checking }: { icon: any; name: string; dev?: Dev; checking: boolean }) {
-  const st = dev?.state;
+const titleCase = (x?: string) => (x ? x.charAt(0).toUpperCase() + x.slice(1).toLowerCase() : '');
+
+// Names come from the devices themselves (receiver: its own model name; projector: brand, maker and model code it reports).
+function describe(kind: 'receiver' | 'projector', dev?: Dev) {
+  if (kind === 'receiver') {
+    return { title: `${dev?.maker || 'Yamaha'} ${dev?.model || 'receiver'}`, detail: dev?.state === 'on' && dev.input ? `Input: ${dev.input}` : '' };
+  }
+  const known = dev?.model ? `${dev.brand || ''} ${dev.maker && dev.maker.toLowerCase() !== (dev.brand || '').toLowerCase() ? titleCase(dev.maker) : ''} ${dev.name || ''}`.replace(/\s+/g, ' ').trim() : '';
+  return { title: known || 'Projector', detail: dev?.model ? `Model ${dev.model}${dev.android ? ` · Android ${dev.android}` : ''}` : '' };
+}
+
+function Device({ kind, dev, checking }: { kind: 'receiver' | 'projector'; dev?: Dev; checking: boolean }) {
+  const st = dev?.state; const { title, detail } = describe(kind, dev);
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-line p-4">
-      <Icon size={20} strokeWidth={1.5} className="text-muted" />
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium text-fg">{name}</p>
-        <p className="flex items-center gap-2 text-xs text-muted">
+    <div className="overflow-hidden rounded-xl border border-line">
+      <div className="h-52 bg-surface2/60">
+        <DeviceModel kind={kind} on={st === 'on'} label={kind === 'receiver' ? dev?.model || '' : ''} sub={kind === 'receiver' ? dev?.input || '' : ''} />
+      </div>
+      <div className="p-4">
+        <p className="text-[15px] font-semibold text-fg">{title}</p>
+        <p className="mt-1 flex items-center gap-2 text-xs text-muted">
           <span className={`h-2 w-2 rounded-full ${st ? DOT[st] : 'animate-pulse bg-line'}`} />
           {st ? LABEL[st] : checking ? 'Checking…' : 'Unknown'}
-          {st === 'on' && dev?.input ? ` · ${dev.input}` : ''}
         </p>
+        {detail && <p className="mt-0.5 text-xs text-muted">{detail}</p>}
       </div>
     </div>
   );
@@ -74,10 +88,10 @@ export default function MediaPage() {
         <button className="btn-ghost btn-icon" onClick={check} aria-label="Check again"><RefreshCw size={15} className={checking ? 'animate-spin' : ''} /></button>
       </PageHeader>
       {error && <Notice>{error}</Notice>}
-      <section className="card mx-auto max-w-xl space-y-5 p-6">
+      <section className="card mx-auto max-w-3xl space-y-5 p-6">
         <div className="grid gap-3 sm:grid-cols-2">
-          <Device icon={Speaker} name="Yamaha receiver" dev={dev.receiver} checking={checking} />
-          <Device icon={Projector} name="Xiaomi projector" dev={dev.projector} checking={checking} />
+          <Device kind="receiver" dev={dev.receiver} checking={checking} />
+          <Device kind="projector" dev={dev.projector} checking={checking} />
         </div>
         {bothOff && <p className="text-sm text-muted">Both are switched off, so there is not much to control right now. You can still open the Media Centre, for example to check saved scenes or settings.</p>}
         {known && anyOn && <p className="text-sm text-muted">Ready when you are.</p>}
