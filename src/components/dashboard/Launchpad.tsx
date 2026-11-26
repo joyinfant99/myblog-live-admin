@@ -18,7 +18,7 @@ const Letter = (name: string) => function LetterTile() {
 const GLYPH: Record<string, { slug: string; Fallback: () => JSX.Element }> = {
   [new URL(SITE_URL).origin]: { slug: 'blog', Fallback: BlogIcon },
   'https://music.joyinfant.com': { slug: 'music', Fallback: MusicIcon },
-  'https://echo.presalesbench.com': { slug: 'echo', Fallback: EchoIcon },
+  'https://echo.joyinfant.com': { slug: 'echo', Fallback: EchoIcon },
   'https://deutsch.joyinfant.com': { slug: 'deutsch', Fallback: Letter('Deutsch') },
   'https://bandosapp.com': { slug: 'bandos', Fallback: Letter('BandOS') },
   'https://app.bandosapp.com': { slug: 'bandos', Fallback: Letter('BandOS') },
