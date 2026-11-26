@@ -2,32 +2,31 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { ArrowRight, RefreshCw, Tv } from 'lucide-react';
-import { API_URL, api, errorMessage } from '@/lib/api';
+import { api, errorMessage } from '@/lib/api';
 import { Notice, PageHeader } from '@/components/ui';
-import DeviceModel from '@/components/DeviceModel';
 
 type Dev = { state: 'on' | 'standby' | 'off'; volume?: number; input?: string; maker?: string; brand?: string; model?: string; name?: string; android?: string };
 type Devices = { receiver?: Dev; projector?: Dev };
 const LABEL = { on: 'Switched on', standby: 'Standby', off: 'Off or unreachable' } as const;
 const DOT = { on: 'bg-success', standby: 'bg-muted', off: 'bg-danger' } as const;
 
-const titleCase = (x?: string) => (x ? x.charAt(0).toUpperCase() + x.slice(1).toLowerCase() : '');
-
-// Names come from the devices themselves (receiver: its own model name; projector: brand, maker and model code it reports).
+// Names come from the devices themselves (receiver: its own model name; projector: the brand and model code it reports).
 function describe(kind: 'receiver' | 'projector', dev?: Dev) {
   if (kind === 'receiver') {
     return { title: `${dev?.maker || 'Yamaha'} ${dev?.model || 'receiver'}`, detail: dev?.state === 'on' && dev.input ? `Input: ${dev.input}` : '' };
   }
-  const known = dev?.model ? `${dev.brand || ''} ${dev.maker && dev.maker.toLowerCase() !== (dev.brand || '').toLowerCase() ? titleCase(dev.maker) : ''} ${dev.name || ''}`.replace(/\s+/g, ' ').trim() : '';
-  return { title: known || 'Projector', detail: dev?.model ? `Model ${dev.model}${dev.android ? ` · Android ${dev.android}` : ''}` : '' };
+  const title = dev?.model ? `${dev.brand || 'Xiaomi'} ${dev.name || ''}`.trim() : 'Xiaomi projector';
+  return { title, detail: dev?.model ? `Model ${dev.model}${dev.android ? ` · Android ${dev.android}` : ''}` : '' };
 }
 
 function Device({ kind, dev, checking }: { kind: 'receiver' | 'projector'; dev?: Dev; checking: boolean }) {
   const st = dev?.state; const { title, detail } = describe(kind, dev);
   return (
     <div className="overflow-hidden rounded-xl border border-line">
-      <div className="h-52 bg-surface2/60">
-        <DeviceModel kind={kind} on={st === 'on'} label={kind === 'receiver' ? dev?.model || '' : ''} sub={kind === 'receiver' ? dev?.input || '' : ''} />
+      {/* Official product photos (Yamaha RX-V485, Xiaomi Smart Projector L1 Pro), shown dimmed while the device is off. */}
+      <div className="flex h-56 items-center justify-center bg-white p-3">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={kind === 'receiver' ? '/media/receiver.jpg' : '/media/projector.png'} alt={title} className={`max-h-full max-w-full object-contain transition ${st === 'on' ? '' : 'opacity-50 grayscale'}`} />
       </div>
       <div className="p-4">
         <p className="text-[15px] font-semibold text-fg">{title}</p>
@@ -61,7 +60,7 @@ export default function MediaPage() {
     const started = Date.now();
     try {
       await api.post('/admin/cinema/session');
-      setTimeout(() => window.location.assign(`${API_URL}/cinema/`), Math.max(0, 1200 - (Date.now() - started)));
+      setTimeout(() => window.location.assign('/cinema'), Math.max(0, 1200 - (Date.now() - started)));
     } catch (e) { setError(errorMessage(e, 'Could not open the Media Centre.')); setOpening(false); }
   };
 
