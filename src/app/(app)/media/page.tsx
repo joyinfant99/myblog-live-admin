@@ -22,13 +22,13 @@ function describe(kind: 'receiver' | 'projector', dev?: Dev) {
 function Device({ kind, dev, checking }: { kind: 'receiver' | 'projector'; dev?: Dev; checking: boolean }) {
   const st = dev?.state; const { title, detail } = describe(kind, dev);
   return (
-    <div className="overflow-hidden rounded-xl border border-line">
+    <div className="flex overflow-hidden rounded-xl border border-line sm:block">
       {/* Official product photos (Yamaha RX-V485, Xiaomi Smart Projector L1 Pro), shown dimmed while the device is off. */}
-      <div className="flex h-56 items-center justify-center bg-white p-3">
+      <div className="flex h-24 w-32 shrink-0 items-center justify-center bg-white p-2 sm:h-56 sm:w-auto sm:p-3">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={kind === 'receiver' ? '/media/receiver.jpg' : '/media/projector.png'} alt={title} className={`max-h-full max-w-full object-contain transition ${st === 'on' ? '' : 'opacity-50 grayscale'}`} />
       </div>
-      <div className="p-4">
+      <div className="min-w-0 flex-1 self-center p-3 sm:p-4">
         <p className="text-[15px] font-semibold text-fg">{title}</p>
         <p className="mt-1 flex items-center gap-2 text-xs text-muted">
           <span className={`h-2 w-2 rounded-full ${st ? DOT[st] : 'animate-pulse bg-line'}`} />
@@ -84,17 +84,17 @@ export default function MediaPage() {
   return (
     <div className="space-y-6">
       <PageHeader icon={Tv} title="Media Centre" description="Receiver, speakers and projector, all in one place.">
-        <button className="btn-ghost btn-icon" onClick={check} aria-label="Check again"><RefreshCw size={15} className={checking ? 'animate-spin' : ''} /></button>
+        <button className="btn-ghost btn-icon hidden sm:inline-flex" onClick={check} aria-label="Check again"><RefreshCw size={15} className={checking ? 'animate-spin' : ''} /></button>
       </PageHeader>
       {error && <Notice>{error}</Notice>}
-      <section className="card mx-auto max-w-3xl space-y-5 p-6">
-        <div className="grid gap-3 sm:grid-cols-2">
+      <section className="card mx-auto max-w-3xl space-y-4 p-3 sm:space-y-5 sm:p-6">
+        <div className="grid gap-2.5 sm:grid-cols-2 sm:gap-3">
           <Device kind="receiver" dev={dev.receiver} checking={checking} />
           <Device kind="projector" dev={dev.projector} checking={checking} />
         </div>
         {bothOff && <p className="text-sm text-muted">Both are switched off, so there is not much to control right now. You can still open the Media Centre, for example to check saved scenes or settings.</p>}
         {known && anyOn && <p className="text-sm text-muted">Ready when you are.</p>}
-        <button className={bothOff ? 'btn-ghost' : 'btn-primary'} onClick={open} disabled={!known && checking}>
+        <button className={`${bothOff ? 'btn-ghost' : 'btn-primary'} w-full justify-center sm:w-auto`} onClick={open} disabled={!known && checking}>
           {bothOff ? 'Open anyway' : 'Open Media Centre'} <ArrowRight size={15} />
         </button>
       </section>
